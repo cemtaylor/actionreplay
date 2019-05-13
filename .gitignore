@@ -223,3 +223,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+.pytest_cache/v/cache/nodeids
+.vscode/settings.json
+.vscode/launch.json
+.pytest_cache/v/cache/stepwise
