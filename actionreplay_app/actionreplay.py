@@ -61,6 +61,7 @@ class ActionRecorder(object):
             'scrollY': scrollY,
             'time': action_time
         }
+        logger.debug(action)
         self.action_log.append(action)
 
     def log_move(self, x, y):
@@ -89,6 +90,7 @@ class ActionRecorder(object):
 
 def main():
     try:
+        Recorder.start()
         while Recorder.recording:
             time.sleep(1)
         ActionReplay(Recorder.action_log)
@@ -113,6 +115,7 @@ if __name__ == '__main__':
     logger.addHandler(console_handler)
     logger.addHandler(logfile_handler)
     ###
+    logger.info('#'*30)
     logger.info('Application started')
     # Create recorder instance
     Recorder = ActionRecorder()
@@ -133,7 +136,5 @@ if __name__ == '__main__':
     keyboard_listener.start()
     logger.info('Keyboard listener started')
     keyboard_controller = keyboard.Controller()
-    # Start the recorder
-    Recorder.start()
     main()
     logger.info('Application closed')
