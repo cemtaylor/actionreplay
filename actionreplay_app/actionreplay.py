@@ -1,61 +1,106 @@
 #!/usr/bin/env python3
-import pyautogui
 import time
-from pymouse import PyMouse, PyMouseEvent  # pyuserinput
-from pykeyboard import PyKeyboard  # pyuserinput
+from timeit import default_timer as timer
+from pynput import mouse, keyboard
+
+
+def log_move(x, y):
+    action_log.append(x, y)
+
+
+def log_click(x, y, button, pressed):
+    action_log.append(x, y, button=button, pressed=pressed)
+
+
+def log_scroll(x, y, dx, dy):
+    action_log.append(x=x, y=y, scrollX=dx, scrollY=dy)
+
+
+def log_key_down(key):
+    action_log.append(key=key, pressed=True)
+
+
+def log_key_up(key):
+    action_log.append(key=key, pressed=False)
 
 
 def replay(actions):
-    for i in range(len(actions)):
-        action = actions[i]
-        try:
-            if action['click'] and actions[i+1]['click']:
-                pyautogui.dragTo(action['pos'])
+    for action in actions:
+        time.sleep(action['time'])
+        if action['key']:
+            if action['pressed']:
+                keyboard_controller.press(action['key'])
+                print(f"Key: {action['key']} Pressed")
             else:
-                pyautogui.moveTo(action['pos'])
-                if action['click']:
-                    pyautogui.click(action['pos'], button='left', clicks=1)
-        except IndexError:
-            pass
+                keyboard_controller.release(action['key'])
+                print(f"Key: {action['key']} Released")
+        else:
+            mouse_controller.position = action['pos']
+            print(f"Mouse moved to: {action['pos']}")
+            if action['button']:
+                print(f"Mouse button: {action['button']}")
+                if action['pressed']:
+                    mouse_controller.press(action['button'])
+                    print(f"Mouse button: {action['button']} Pressed")
+                else:
+                    mouse_controller.release(action['button'])
+                    print(f"Mouse button: {action['button']} Released")
 
 
-class FinishRecording(Exception):
-    pass
-
-
-class Record(PyMouseEvent):
+class ActionLog(object):
     def __init__(self):
-        PyMouseEvent.__init__(self)
-        self.down = False
         self.action_log = []
+        self.last_action = timer()
+        self.recording = True
 
-    def move(self, x, y):
-        action = {'pos': (x, y), 'click': self.down}
+    def append(self, x=0, y=0, button=None, pressed=False, scrollX=0, scrollY=0, key=None):
+        if self.recording == False:
+            return
+        if key == keyboard.Key.esc:
+            print("User entered escape - ending recording")
+            self.recording = False
+            return
+        current_time = timer()
+        action_time = current_time - self.last_action
+        self.last_action = current_time
+        action = {
+            'pos': (x, y),
+            'button': button,
+            'key': key,
+            'pressed': pressed,
+            'scrollX': scrollX,
+            'scrollY': scrollY,
+            'time': action_time
+        }
         self.action_log.append(action)
 
-    def click(self, x, y, button, press):
-        if button == 1:
-            if press:
-                self.down = True
-                action = {'pos': (x, y), 'click': self.down}
-                self.action_log.append(action)
-            else:
-                self.down = False
-        else:
-            # Exit if any other mouse button used
-            # This self.stop() should work but it traps us in the recorder class
-            # we raise an exception instead.
-            # self.stop()
-            raise FinishRecording("Finished recording")
+
+def main():
+    try:
+        while action_log.recording:
+            pass
+        print("REPLAYING ACTIONS")
+        replay(action_log.action_log)
+    except KeyboardInterrupt:
+        pass
 
 
-R = Record()
-R.daemon = True
-try:
-    R.run()
-    print("this is a daemon")
-except FinishRecording:
-    print("Run complete")
-    input("anything to replay\n")
-    time.sleep(2)
-    replay(R.action_log)
+if __name__ == '__main__':
+    action_log = ActionLog()
+    mouse_listener = mouse.Listener(
+        on_move=log_move,
+        on_click=log_click,
+        on_scroll=log_scroll
+    )
+    mouse_listener.start()
+    mouse_controller = mouse.Controller()
+
+    keyboard_listener = keyboard.Listener(
+        on_press=log_key_down,
+        on_release=log_key_up
+    )
+    keyboard_listener.start()
+    keyboard_controller = keyboard.Controller()
+    print("Recording Active")
+    main()
+    print("Ended")
