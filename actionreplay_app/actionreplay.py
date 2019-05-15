@@ -6,6 +6,7 @@ import sys
 from timeit import default_timer as timer
 from pynput import mouse, keyboard
 from PySide2 import QtCore, QtWidgets, QtGui
+from ui import Ui_ActionReplay
 
 
 class ActionReplay(object):
@@ -16,7 +17,7 @@ class ActionReplay(object):
         self.keyboard_controller = keyboard.Controller()
         self.replay = True
 
-    def start(self, actions):
+    def start(self, actions: list):
         """Start replacing the list of actions passed as method argument"""
         logger.info('Replay started')
         for action in actions:
@@ -95,15 +96,15 @@ class ActionRecorder(object):
         logger.debug("Adding action")
         self.action_log.append(action)
 
-    def log_move(self, x, y):
+    def log_move(self, x: int, y: int):
         """Call add_action for mouse move event"""
         self.add_action(x, y)
 
-    def log_click(self, x, y, button, pressed):
+    def log_click(self, x: int, y: int, button, pressed: bool):
         """Call add_action for mouse click event"""
         self.add_action(x, y, button=button, pressed=pressed)
 
-    def log_scroll(self, x, y, dx, dy):
+    def log_scroll(self, x: int, y: int, dx: int, dy: int):
         """Call add_action for mouse scroll event"""
         self.add_action(x=x, y=y, scroll_x=dx, scroll_y=dy)
 
@@ -141,52 +142,19 @@ class ActionRecorder(object):
         logger.info('Recording stopped')
 
 
-class ActionWidget(object):
+class ActionWidget(QtWidgets.QWidget):
     """Present GUI for controlling Action Record/Replay"""
 
-    def setupUi(self, Widget):
-        Widget.setObjectName("Action Replay")
-        Widget.resize(400, 300)
-        Widget.setMouseTracking(False)
+    def __init__(self):
+        super().__init__()
+        logger.info('GUI initiated')
         self.action_recorder = ActionRecorder()
         self.action_replayer = ActionReplay()
-        self.gridLayoutWidget = QtWidgets.QWidget(Widget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(9, 9, 381, 281))
-        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout.setObjectName("gridLayout")
-        self.stop_recording = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.stop_recording.setObjectName("stop_recording")
-        self.gridLayout.addWidget(self.stop_recording, 3, 0, 1, 1)
-        self.console_output = QtWidgets.QTextBrowser(self.gridLayoutWidget)
-        self.console_output.setObjectName("console_output")
-        self.gridLayout.addWidget(self.console_output, 0, 0, 1, 1)
-        self.start_recording = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.start_recording.setObjectName("start_recording")
-        self.gridLayout.addWidget(self.start_recording, 2, 0, 1, 1)
-        self.replay_action = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.replay_action.setObjectName("replay_action")
-        self.gridLayout.addWidget(self.replay_action, 5, 0, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem, 4, 0, 1, 1)
-        self.start_recording.clicked.connect(
-            self.start_recorder)
-        self.stop_recording.clicked.connect(self.stop_recorder)
-        self.replay_action.clicked.connect(self.start_replay)
-        self.retranslateUi(Widget)
-        QtCore.QMetaObject.connectSlotsByName(Widget)
-
-    def retranslateUi(self, Widget):
-        Widget.setWindowTitle(QtWidgets.QApplication.translate(
-            "Widget", "Widget", None, -1))
-        self.stop_recording.setText(QtWidgets.QApplication.translate(
-            "ActionReplay", "Stop Recording", None, -1))
-        self.start_recording.setText(QtWidgets.QApplication.translate(
-            "ActionReplay", "Record Action", None, -1))
-        self.replay_action.setText(QtWidgets.QApplication.translate(
-            "ActionReplay", "Replay Action", None, -1))
+        self.ui = Ui_ActionReplay.Ui_ActionReplay()
+        self.ui.setupUi(self)
+        self.ui.start_recording.clicked.connect(self.start_recorder)
+        self.ui.stop_recording.clicked.connect(self.stop_recorder)
+        self.ui.replay_action.clicked.connect(self.start_replay)
 
     def start_recorder(self):
         """Start the ActionRecorder instance"""
@@ -219,11 +187,10 @@ def record_replay():
 
 def main():
     app = QtWidgets.QApplication([])
-    widget_object = QtWidgets.QWidget()
     action_widget = ActionWidget()
-    action_widget.setupUi(widget_object)
+    action_widget.resize(400, 400)
     logger.info("Starting widget")
-    widget_object.show()
+    action_widget.show()
     sys.exit(app.exec_())
 
 
