@@ -227,3 +227,4 @@ venv.bak/
 .vscode/settings.json
 .vscode/launch.json
 .pytest_cache/v/cache/stepwise
+action.replay

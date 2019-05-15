@@ -61,16 +61,33 @@ class ActionRecorder(object):
         self.filename = './action.replay'
         logger.info('Action Recorder initialized')
 
-    def save_actions(self, filename='./action.replay'):
+    def save_actions(self, actions, filename='./action.replay'):
         """Save recorded actions to file for reuse"""
-        json_log = json.dumps(self.action_log)
+        if not actions:
+            actions = self.action_log
+        # convert key to key value
+        for action in actions:
+            if action['key']:
+                try:
+                    action['key'] = action['key'].value.vk
+                except AttributeError:
+                    action['key'] = action['key'].vk
+            elif action['button']:
+                action['button'] = action['button'].name
+        json_log = json.dumps(actions)
         with open(filename, 'w') as f:
             f.write(json_log)
 
     def load_actions(self, filename='./action.replay'):
         """Load recorded actions from file for reuse"""
         with open(filename, 'r') as f:
-            self.action_log = json.load(f)
+            actions = json.load(f)
+        for action in actions:
+            if action['key']:
+                action['key'] = keyboard.KeyCode(action['key'])
+            elif action['button']:
+                action['button'] = getattr(mouse.Button, action['button'])
+        self.action_log = actions
 
     def add_action(self, x=0, y=0, button=None, pressed=False, scroll_x=0, scroll_y=0, key=None):
         """Save actions to list in memory to be played or saved"""
@@ -78,7 +95,7 @@ class ActionRecorder(object):
             return
         if key == keyboard.Key.esc:
             logger.info('Stop recording hotkey detected - Stopping recording')
-            self.recording = False
+            self.stop()
             return
         current_time = timer()
         action_time = current_time - self.last_action
@@ -140,6 +157,7 @@ class ActionRecorder(object):
         """Set recording variable to False"""
         self.recording = False
         logger.info('Recording stopped')
+        return
 
 
 class ActionWidget(QtWidgets.QWidget):
@@ -171,6 +189,7 @@ class ActionWidget(QtWidgets.QWidget):
         logger.info('GUI initiated replay start')
         self.action_recorder.stop()
         self.action_replayer.start(self.action_recorder.action_log)
+        self.activateWindow()
 
 
 def record_replay():
@@ -180,6 +199,12 @@ def record_replay():
         while Recorder.recording:
             time.sleep(1)
         Replayer = ActionReplay()
+        # Replayer.start(Recorder.action_log)
+        Recorder.save_actions(actions=Recorder.action_log)
+        print(Recorder.action_log)
+        Recorder.action_log = []
+        print(Recorder.action_log)
+        Recorder.load_actions()
         Replayer.start(Recorder.action_log)
     except KeyboardInterrupt:
         logger.warning("Keyboard interrupt - application exiting")
@@ -214,5 +239,6 @@ if __name__ == '__main__':
     # Start application
     logger.info('#'*30)
     logger.info('Application started')
-    main()
+    # main()
+    record_replay()
     logger.info('Application closed')
