@@ -239,6 +239,5 @@ if __name__ == '__main__':
     # Start application
     logger.info('#'*30)
     logger.info('Application started')
-    # main()
-    record_replay()
+    main()
     logger.info('Application closed')
