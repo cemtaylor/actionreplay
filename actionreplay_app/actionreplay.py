@@ -1,52 +1,82 @@
 #!/usr/bin/env python3
 import time
 import logging
+import json
+import sys
 from timeit import default_timer as timer
 from pynput import mouse, keyboard
+from PySide2 import QtCore, QtWidgets, QtGui
 
 
-def ActionReplay(actions):
-    time.sleep(1)
-    logger.info('Replay started')
-    for action in actions:
-        time.sleep(action['time'])
-        if action['key']:
-            if action['pressed']:
-                keyboard_controller.press(action['key'])
-                logger.debug("Key %s Pressed", action['key'])
-            else:
-                keyboard_controller.release(action['key'])
-                logger.debug("Key %s Released", action['key'])
-        else:
-            if mouse_controller.position != action['pos']:
-                mouse_controller.position = action['pos']
-                logger.debug("Mouse moved to %s", action['pos'])
-            if action['scrollX'] or action['scrollY']:
-                mouse_controller.scroll(action['scrollX'], action['scrollY'])
-                logger.debug(
-                    f"Scrolled {action['scrollX'],action['scrollY']}")
-            if action['button']:
+class ActionReplay(object):
+    """Take control over KB/M and replay a list of actions"""
+
+    def __init__(self):
+        self.mouse_controller = mouse.Controller()
+        self.keyboard_controller = keyboard.Controller()
+        self.replay = True
+
+    def start(self, actions):
+        """Start replacing the list of actions passed as method argument"""
+        logger.info('Replay started')
+        for action in actions:
+            if not self.replay:
+                break
+            time.sleep(action['time'])
+            if action['key']:
                 if action['pressed']:
-                    mouse_controller.press(action['button'])
-                    logger.debug("Mouse button %s Pressed", action['button'])
+                    self.keyboard_controller.press(action['key'])
+                    logger.debug("Key %s Pressed", action['key'])
                 else:
-                    mouse_controller.release(action['button'])
+                    self.keyboard_controller.release(action['key'])
+                    logger.debug("Key %s Released", action['key'])
+            else:
+                if self.mouse_controller.position != action['pos']:
+                    self.mouse_controller.position = action['pos']
+                    logger.debug("Mouse moved to %s", action['pos'])
+                if action['scroll_x'] or action['scroll_y']:
+                    self.mouse_controller.scroll(
+                        action['scroll_x'], action['scroll_y'])
                     logger.debug(
-                        "Mouse button %s Released", action['button'])
+                        "Scrolled %s", (action['scroll_x'], action['scroll_y']))
+                if action['button']:
+                    if action['pressed']:
+                        self.mouse_controller.press(action['button'])
+                        logger.debug("Mouse button %s Pressed",
+                                     action['button'])
+                    else:
+                        self.mouse_controller.release(action['button'])
+                        logger.debug(
+                            "Mouse button %s Released", action['button'])
 
 
 class ActionRecorder(object):
+    """Record kb/m actions to an action log to be replayed"""
+
     def __init__(self):
         self.action_log = []
-        self.last_action = timer()
+        self.last_action = 0
         self.recording = False
+        self.filename = './action.replay'
         logger.info('Action Recorder initialized')
 
-    def add_action(self, x=0, y=0, button=None, pressed=False, scrollX=0, scrollY=0, key=None):
-        if self.recording == False:
+    def save_actions(self, filename='./action.replay'):
+        """Save recorded actions to file for reuse"""
+        json_log = json.dumps(self.action_log)
+        with open(filename, 'w') as f:
+            f.write(json_log)
+
+    def load_actions(self, filename='./action.replay'):
+        """Load recorded actions from file for reuse"""
+        with open(filename, 'r') as f:
+            self.action_log = json.load(f)
+
+    def add_action(self, x=0, y=0, button=None, pressed=False, scroll_x=0, scroll_y=0, key=None):
+        """Save actions to list in memory to be played or saved"""
+        if not self.recording:
             return
         if key == keyboard.Key.esc:
-            logger.info('Escape key detected - Ending recording')
+            logger.info('Stop recording hotkey detected - Stopping recording')
             self.recording = False
             return
         current_time = timer()
@@ -57,45 +87,117 @@ class ActionRecorder(object):
             'button': button,
             'key': key,
             'pressed': pressed,
-            'scrollX': scrollX,
-            'scrollY': scrollY,
+            'scroll_x': scroll_x,
+            'scroll_y': scroll_y,
             'time': action_time
         }
-        logger.debug(action)
+        # logger.debug(action)
+        logger.debug("Adding action")
         self.action_log.append(action)
 
     def log_move(self, x, y):
+        """Call add_action for mouse move event"""
         self.add_action(x, y)
 
     def log_click(self, x, y, button, pressed):
+        """Call add_action for mouse click event"""
         self.add_action(x, y, button=button, pressed=pressed)
 
     def log_scroll(self, x, y, dx, dy):
-        self.add_action(x=x, y=y, scrollX=dx, scrollY=dy)
+        """Call add_action for mouse scroll event"""
+        self.add_action(x=x, y=y, scroll_x=dx, scroll_y=dy)
 
     def log_key_down(self, key):
+        """Call add_action for key down event"""
         self.add_action(key=key, pressed=True)
 
     def log_key_up(self, key):
+        """Call add_action for key up event"""
         self.add_action(key=key, pressed=False)
 
     def start(self):
+        """Start kb/m listeners and set recording variable to True, wipe actions"""
+        mouse_listener = mouse.Listener(
+            on_move=self.log_move,
+            on_click=self.log_click,
+            on_scroll=self.log_scroll
+        )
+        mouse_listener.start()
+        logger.info('Mouse listener started')
+        keyboard_listener = keyboard.Listener(
+            on_press=self.log_key_down,
+            on_release=self.log_key_up
+        )
+        keyboard_listener.start()
+        logger.info('Keyboard listener started')
+        self.action_log = []
         self.recording = True
+        self.last_action = timer()
         logger.info('Recording started')
 
     def stop(self):
+        """Set recording variable to False"""
         self.recording = False
         logger.info('Recording stopped')
 
 
-def main():
+class ActionWidget(QtWidgets.QWidget):
+    """Present GUI for controlling Action Record/Replay"""
+
+    def __init__(self):
+        super().__init__()
+        logger.info('GUI initiated')
+        self.action_recorder = ActionRecorder()
+        self.action_replayer = ActionReplay()
+        self.recorder_button = QtWidgets.QPushButton("Record")
+        self.playback_button = QtWidgets.QPushButton("Playback")
+        self.text = QtWidgets.QLabel("Action Replay")
+        self.text.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.layout = QtWidgets.QVBoxLayout()
+        self.layout.addWidget(self.text)
+        self.layout.addWidget(self.recorder_button)
+        self.layout.addWidget(self.playback_button)
+        self.setLayout(self.layout)
+        self.recorder_button.clicked.connect(self.start_recorder)
+        self.playback_button.clicked.connect(self.start_replay)
+
+    def start_recorder(self):
+        """Start the ActionRecorder instance"""
+        logger.info('GUI initiated recorder start')
+        self.action_recorder.start()
+
+    def stop_recorder(self):
+        """Stop the ActionRecorder instance"""
+        logger.info('GUI initiated recorder stop')
+        self.action_recorder.stop()
+
+    def start_replay(self):
+        """Start the ActionReplay instance"""
+        logger.info('GUI initiated replay start')
+        self.action_recorder.stop()
+        self.action_replayer.start(self.action_recorder.action_log)
+
+
+def record_replay():
+    Recorder = ActionRecorder()
     try:
         Recorder.start()
         while Recorder.recording:
             time.sleep(1)
-        ActionReplay(Recorder.action_log)
+        Replayer = ActionReplay()
+        Replayer.start(Recorder.action_log)
     except KeyboardInterrupt:
         logger.warning("Keyboard interrupt - application exiting")
+
+
+def main():
+    app = QtWidgets.QApplication([])
+    action_widget = ActionWidget()
+    action_widget.resize(400, 400)
+    logger.info("Starting widget")
+    action_widget.show()
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
@@ -114,27 +216,9 @@ if __name__ == '__main__':
     logfile_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.addHandler(logfile_handler)
-    ###
+
+    # Start application
     logger.info('#'*30)
     logger.info('Application started')
-    # Create recorder instance
-    Recorder = ActionRecorder()
-    # Start listeners & create controllers for kb/m
-    mouse_listener = mouse.Listener(
-        on_move=Recorder.log_move,
-        on_click=Recorder.log_click,
-        on_scroll=Recorder.log_scroll
-    )
-    mouse_listener.start()
-    logger.info('Mouse listener started')
-    mouse_controller = mouse.Controller()
-
-    keyboard_listener = keyboard.Listener(
-        on_press=Recorder.log_key_down,
-        on_release=Recorder.log_key_up
-    )
-    keyboard_listener.start()
-    logger.info('Keyboard listener started')
-    keyboard_controller = keyboard.Controller()
     main()
     logger.info('Application closed')
