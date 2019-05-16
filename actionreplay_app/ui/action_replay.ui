@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>172</width>
+    <height>361</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -19,13 +19,49 @@
   <widget class="QWidget" name="gridLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>9</y>
-     <width>381</width>
-     <height>281</height>
+     <x>0</x>
+     <y>0</y>
+     <width>171</width>
+     <height>361</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
+    <item row="4" column="0">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>40</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="8" column="0">
+     <widget class="QPushButton" name="replay_action">
+      <property name="text">
+       <string>Replay Action</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="start_recording">
+      <property name="text">
+       <string>Record Action</string>
+      </property>
+      <property name="autoDefault">
+       <bool>true</bool>
+      </property>
+      <property name="default">
+       <bool>true</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
     <item row="3" column="0">
      <widget class="QPushButton" name="stop_recording">
       <property name="text">
@@ -33,25 +69,22 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="0">
-     <widget class="QTextBrowser" name="console_output"/>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="start_recording">
+    <item row="6" column="0">
+     <widget class="QPushButton" name="load_action">
       <property name="text">
-       <string>Record Action</string>
+       <string>Load Action</string>
       </property>
      </widget>
     </item>
     <item row="5" column="0">
-     <widget class="QPushButton" name="replay_action">
+     <widget class="QPushButton" name="save_action">
       <property name="text">
-       <string>Replay Action</string>
+       <string>Save Action</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
-     <spacer name="horizontalSpacer">
+    <item row="7" column="0">
+     <spacer name="horizontalSpacer_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
