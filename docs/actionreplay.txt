@@ -1,0 +1,7 @@
+When updating UI via QT-Designer, run actionreplay_app/ui/convertui.sh to update the python code.
+TODO:
+    * Add proper save/load from file dialogs
+    * Add the ability to capture screenshots and display actions on top
+    * Add the ability to only record clicks and automatically navigate the mouse (reduce detection)
+    * Add click fuzzing (define an area (x,y) to click within, randomize this)
+    * Add the ability to manually edit the time between actions

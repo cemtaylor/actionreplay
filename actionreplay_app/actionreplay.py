@@ -3,9 +3,11 @@ import time
 import logging
 import json
 import sys
+import copy
 from timeit import default_timer as timer
 from pynput import mouse, keyboard
 from PySide2 import QtCore, QtWidgets, QtGui
+from PySide2.QtCore import Signal, Slot
 from ui import Ui_ActionReplay
 
 
@@ -58,6 +60,11 @@ class ActionRecorder(object):
         self.action_log = []
         self.last_action = 0
         self.recording = False
+        self.click = True
+        self.move = True
+        self.keydown = True
+        self.keyup = True
+        self.scroll = True
         self.filename = './action.replay'
         logger.info('Action Recorder initialized')
 
@@ -65,8 +72,10 @@ class ActionRecorder(object):
         """Save recorded actions to file for reuse"""
         if not actions:
             actions = self.action_log
-        # convert key to key value
-        for action in actions:
+        # Convert from pynput objects to int/str we can convert back when loaded
+        # Creates a copy of the passed actions to ensure we dont alter original
+        saved_actions = copy.deepcopy(actions)
+        for action in saved_actions:
             if action['key']:
                 try:
                     action['key'] = action['key'].value.vk
@@ -74,7 +83,7 @@ class ActionRecorder(object):
                     action['key'] = action['key'].vk
             elif action['button']:
                 action['button'] = action['button'].name
-        json_log = json.dumps(actions)
+        json_log = json.dumps(saved_actions)
         with open(filename, 'w') as f:
             f.write(json_log)
 
@@ -111,8 +120,24 @@ class ActionRecorder(object):
         }
         self.action_log.append(action)
 
-    def start(self):
+    def start(self, click=True, move=True, scroll=True, keydown=True, keyup=True):
         """Start kb/m listeners and set recording variable to True, wipe actions"""
+        # Ensure action log is empty
+        self.action_log = []
+
+        # Configure actions being recorded
+        if not click:
+            self.click = click
+        if not move:
+            self.move = move
+        if not scroll:
+            self.scroll = scroll
+        if not keydown:
+            self.keydown = keydown
+        if not keyup:
+            self.keyup = keyup
+
+        # Start listeners
         mouse_listener = mouse.Listener(
             on_move=self.log_move,
             on_click=self.log_click,
@@ -126,7 +151,8 @@ class ActionRecorder(object):
         )
         keyboard_listener.start()
         logger.info('Keyboard listener started')
-        self.action_log = []
+
+        # Enable recording and start timer
         self.recording = True
         self.last_action = timer()
         logger.info('Recording started')
@@ -139,23 +165,52 @@ class ActionRecorder(object):
 
     def log_move(self, x: int, y: int):
         """Call add for mouse move event"""
-        self.add(x, y)
+        if self.move:
+            self.add(x, y)
 
     def log_click(self, x: int, y: int, button, pressed: bool):
         """Call add for mouse click event"""
-        self.add(x, y, button=button, pressed=pressed)
+        if self.click:
+            self.add(x, y, button=button, pressed=pressed)
 
     def log_scroll(self, x: int, y: int, dx: int, dy: int):
         """Call add for mouse scroll event"""
-        self.add(x=x, y=y, scroll_x=dx, scroll_y=dy)
+        if self.scroll:
+            self.add(x=x, y=y, scroll_x=dx, scroll_y=dy)
 
     def log_key_down(self, key):
         """Call add for key down event"""
-        self.add(key=key, pressed=True)
+        if self.keydown:
+            self.add(key=key, pressed=True)
 
     def log_key_up(self, key):
         """Call add for key up event"""
-        self.add(key=key, pressed=False)
+        if self.keyup:
+            self.add(key=key, pressed=False)
+
+
+class ActionThread(QtCore.QThread):
+    def __init__(self, parent, run_func, arguments=None, **kwargs):
+        super(ActionThread, self).__init__(parent)
+        self._passed_method = run_func
+        self._passed_arguments = arguments
+        self._kwargs = kwargs
+
+    def run(self):
+        # This is required to debug with vscode - it should be removed in release
+        try:
+            import ptvsd
+            ptvsd.debug_this_thread()
+        except:
+            pass
+        if self._passed_arguments and not self._kwargs:
+            self._passed_method(self._passed_arguments)
+        elif not self._passed_arguments and self._kwargs:
+            self._passed_method(**self._kwargs)
+        elif self._passed_arguments and self._kwargs:
+            self._passed_method(self._passed_arguments, **self._kwargs)
+        else:
+            self._passed_method()
 
 
 class ActionWidget(QtWidgets.QWidget):
@@ -177,28 +232,35 @@ class ActionWidget(QtWidgets.QWidget):
     def record(self):
         """Start the ActionRecorder instance"""
         logger.info('GUI initiated recorder start')
-        self.action_recorder.start()
+        temp_thread = ActionThread(
+            self, self.action_recorder.start, move=False)
+        temp_thread.start()
 
     def stop(self):
         """Stop the ActionRecorder instance"""
         logger.info('GUI initiated recorder stop')
-        self.action_recorder.stop()
+        temp_thread = ActionThread(self, self.action_recorder.stop)
+        temp_thread.start()
 
     def save(self):
-        """Save actions to file"""
-        logger.info('GUI initiated action save')
-        self.action_recorder.save(self.action_recorder.action_log)
+        temp_thread = ActionThread(
+            self, self.action_recorder.save, self.action_recorder.action_log)
+        temp_thread.start()
+        print("Thread returned")
 
     def load(self):
         """Load actions from file"""
         logger.info('GUI initiated action load')
-        self.action_recorder.load()
+        temp_thread = ActionThread(self, self.action_recorder.load)
+        temp_thread.start()
 
     def replay(self):
         """Start the ActionReplay instance"""
         logger.info('GUI initiated replay start')
         self.action_recorder.stop()
-        self.action_replayer.start(self.action_recorder.action_log)
+        temp_thread = ActionThread(
+            self, self.action_replayer.start, self.action_recorder.action_log)
+        temp_thread.start()
         self.activateWindow()
 
 
@@ -209,11 +271,9 @@ def record_replay():
         while Recorder.recording:
             time.sleep(1)
         Replayer = ActionReplay()
-        # Replayer.start(Recorder.action_log)
+        Replayer.start(Recorder.action_log)
         Recorder.save(actions=Recorder.action_log)
-        print(Recorder.action_log)
         Recorder.action_log = []
-        print(Recorder.action_log)
         Recorder.load()
         Replayer.start(Recorder.action_log)
     except KeyboardInterrupt:
