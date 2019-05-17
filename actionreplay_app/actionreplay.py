@@ -197,7 +197,7 @@ class ActionThread(QtCore.QThread):
         self._kwargs = kwargs
 
     def run(self):
-        # This is required to debug with vscode - it should be removed in release
+        # This try/except is required to debug threds with vscode - it should be removed in release
         try:
             import ptvsd
             ptvsd.debug_this_thread()
@@ -219,21 +219,53 @@ class ActionWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         logger.info('GUI initiated')
+        # Set class variables
+        self.recording_options = {
+            'move': True,
+            'click': True,
+            'scroll': True,
+            'keydown': True,
+            'keyup': True
+        }
+        # Initiate recorder/replayer
         self.action_recorder = ActionRecorder()
         self.action_replayer = ActionReplay()
+
+        # Create GUI
         self.ui = Ui_ActionReplay.Ui_ActionReplay()
         self.ui.setupUi(self)
+
+        # Main button actions
         self.ui.start_recording.clicked.connect(self.record)
         self.ui.stop_recording.clicked.connect(self.stop)
         self.ui.save_action.clicked.connect(self.save)
         self.ui.load_action.clicked.connect(self.load)
+        self.ui.quick_save_action.clicked.connect(self.quick_save)
+        self.ui.quick_load_action.clicked.connect(self.quick_load)
         self.ui.replay_action.clicked.connect(self.replay)
+
+        # Recording state checkbox actions
+        self.ui.record_move.toggled.connect(
+            lambda: self.toggle_recording_option('move'))
+        self.ui.record_click.toggled.connect(
+            lambda: self.toggle_recording_option('click'))
+        self.ui.record_scroll.toggled.connect(
+            lambda: self.toggle_recording_option('scroll'))
+        self.ui.record_keydown.toggled.connect(
+            lambda: self.toggle_recording_option('keydown'))
+        self.ui.record_keyup.toggled.connect(
+            lambda: self.toggle_recording_option('keyup'))
+
+    def toggle_recording_option(self, option):
+        self.recording_options[option] = not self.recording_options[option]
+        logger.info("Toggling %s option to %s" %
+                    (option, self.recording_options[option]))
 
     def record(self):
         """Start the ActionRecorder instance"""
         logger.info('GUI initiated recorder start')
         temp_thread = ActionThread(
-            self, self.action_recorder.start, move=False)
+            self, self.action_recorder.start, **self.recording_options)
         temp_thread.start()
 
     def stop(self):
@@ -243,14 +275,36 @@ class ActionWidget(QtWidgets.QWidget):
         temp_thread.start()
 
     def save(self):
+        logging.info("GUI initiated save")
+        file_name = QtWidgets.QFileDialog.getSaveFileName(
+            self, "Save Replay", "./", ".replay")
+        if file_name:
+            save_options = {
+                'actions': self.action_recorder.action_log, 'filename': ''.join(file_name)}
+            temp_thread = ActionThread(
+                self, self.action_recorder.save, **save_options)
+            temp_thread.start()
+            print("Thread returned")
+
+    def load(self):
+        logging.info("GUI initiated load")
+        file_name = QtWidgets.QFileDialog.getOpenFileName(
+            self, "Open Replay", "./", "*.replay")
+        if file_name:
+            load_options = {'filename': file_name[0]}
+            temp_thread = ActionThread(
+                self, self.action_recorder.load, **load_options)
+            temp_thread.start()
+
+    def quick_save(self):
+        logger.info("GUI initiated action quick save")
         temp_thread = ActionThread(
             self, self.action_recorder.save, self.action_recorder.action_log)
         temp_thread.start()
-        print("Thread returned")
 
-    def load(self):
+    def quick_load(self):
         """Load actions from file"""
-        logger.info('GUI initiated action load')
+        logger.info('GUI initiated action quick load')
         temp_thread = ActionThread(self, self.action_recorder.load)
         temp_thread.start()
 
