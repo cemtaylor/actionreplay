@@ -257,6 +257,7 @@ class ActionWidget(QtWidgets.QWidget):
             lambda: self.toggle_recording_option('keyup'))
 
     def toggle_recording_option(self, option):
+        """Invert the state of the passed recording option to determine what is recorded"""
         self.recording_options[option] = not self.recording_options[option]
         logger.info("Toggling %s option to %s" %
                     (option, self.recording_options[option]))
@@ -275,6 +276,7 @@ class ActionWidget(QtWidgets.QWidget):
         temp_thread.start()
 
     def save(self):
+        """Save actions to file"""
         logging.info("GUI initiated save")
         file_name = QtWidgets.QFileDialog.getSaveFileName(
             self, "Save Replay", "./", ".replay")
@@ -287,6 +289,7 @@ class ActionWidget(QtWidgets.QWidget):
             print("Thread returned")
 
     def load(self):
+        """Load actions from file"""
         logging.info("GUI initiated load")
         file_name = QtWidgets.QFileDialog.getOpenFileName(
             self, "Open Replay", "./", "*.replay")
@@ -297,13 +300,14 @@ class ActionWidget(QtWidgets.QWidget):
             temp_thread.start()
 
     def quick_save(self):
+        """Quick save actions to default action.replay file"""
         logger.info("GUI initiated action quick save")
         temp_thread = ActionThread(
             self, self.action_recorder.save, self.action_recorder.action_log)
         temp_thread.start()
 
     def quick_load(self):
-        """Load actions from file"""
+        """Quick load actions from default actio.replay file"""
         logger.info('GUI initiated action quick load')
         temp_thread = ActionThread(self, self.action_recorder.load)
         temp_thread.start()
