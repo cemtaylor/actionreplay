@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>470</width>
-    <height>363</height>
+    <width>413</width>
+    <height>356</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -20,8 +20,8 @@
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>80</y>
-     <width>111</width>
+     <y>40</y>
+     <width>91</width>
      <height>36</height>
     </rect>
    </property>
@@ -32,9 +32,9 @@
   <widget class="QPushButton" name="load_action">
    <property name="geometry">
     <rect>
-     <x>340</x>
-     <y>80</y>
-     <width>111</width>
+     <x>320</x>
+     <y>40</y>
+     <width>91</width>
      <height>36</height>
     </rect>
    </property>
@@ -47,7 +47,7 @@
     <rect>
      <x>10</x>
      <y>320</y>
-     <width>441</width>
+     <width>401</width>
      <height>36</height>
     </rect>
    </property>
@@ -61,7 +61,7 @@
      <x>0</x>
      <y>0</y>
      <width>229</width>
-     <height>242</height>
+     <height>284</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -144,12 +144,25 @@
     </item>
    </layout>
   </widget>
+  <widget class="QPushButton" name="quick_load_action">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>0</y>
+     <width>92</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Quick Load</string>
+   </property>
+  </widget>
   <widget class="QPushButton" name="quick_save_action">
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>20</y>
-     <width>92</width>
+     <y>0</y>
+     <width>91</width>
      <height>36</height>
     </rect>
    </property>
@@ -157,17 +170,26 @@
     <string>Quick Save</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="quick_load_action">
+  <widget class="QListWidget" name="list_saved_actions">
    <property name="geometry">
     <rect>
-     <x>360</x>
-     <y>20</y>
-     <width>92</width>
-     <height>36</height>
+     <x>230</x>
+     <y>80</y>
+     <width>181</width>
+     <height>201</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Quick Load</string>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <property name="textElideMode">
+    <enum>Qt::ElideRight</enum>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="sortingEnabled">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

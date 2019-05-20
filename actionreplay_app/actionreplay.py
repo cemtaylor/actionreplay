@@ -6,6 +6,8 @@ import sys
 import copy
 from timeit import default_timer as timer
 from pynput import mouse, keyboard
+# GUI imports
+import os
 from PySide2 import QtCore, QtWidgets, QtGui
 from PySide2.QtCore import Signal, Slot
 from ui import Ui_ActionReplay
@@ -244,7 +246,6 @@ class ActionWidget(QtWidgets.QWidget):
         self.ui.quick_load_action.clicked.connect(self.quick_load)
         self.ui.replay_action.clicked.connect(self.replay)
 
-        # Recording state checkbox actions
         self.ui.record_move.toggled.connect(
             lambda: self.toggle_recording_option('move'))
         self.ui.record_click.toggled.connect(
@@ -256,6 +257,32 @@ class ActionWidget(QtWidgets.QWidget):
         self.ui.record_keyup.toggled.connect(
             lambda: self.toggle_recording_option('keyup'))
 
+        saved_items = self.find_saved_actions(os.getcwd())
+        self.show_saved_items(saved_items)
+
+    def show_saved_items(self, saved_items):
+        already_listed = []
+        for i in range(len(saved_items)):
+            if self.ui.list_saved_actions.item(i):
+                already_listed.append(
+                    self.ui.list_saved_actions.item(i).text())
+        for item in saved_items:
+            if item not in already_listed:
+                self.ui.list_saved_actions.addItem(item)
+
+    def find_saved_actions(self, directory='.'):
+        saved_items = []
+        with os.scandir(directory) as listed_files:
+            for item in listed_files:
+                if item.is_file() and ".replay" in item.name:
+                    saved_items.append(item.path)
+                elif not item.is_file():
+                    new_dir = self.find_saved_actions(item.path)
+                    if new_dir:
+                        saved_items.append(new_dir)
+        if len(saved_items) > 0:
+            return saved_items
+
     def toggle_recording_option(self, option):
         """Invert the state of the passed recording option to determine what is recorded"""
         self.recording_options[option] = not self.recording_options[option]
@@ -265,15 +292,15 @@ class ActionWidget(QtWidgets.QWidget):
     def record(self):
         """Start the ActionRecorder instance"""
         logger.info('GUI initiated recorder start')
-        temp_thread = ActionThread(
+        _thread = ActionThread(
             self, self.action_recorder.start, **self.recording_options)
-        temp_thread.start()
+        _thread.start()
 
     def stop(self):
         """Stop the ActionRecorder instance"""
         logger.info('GUI initiated recorder stop')
-        temp_thread = ActionThread(self, self.action_recorder.stop)
-        temp_thread.start()
+        _thread = ActionThread(self, self.action_recorder.stop)
+        _thread.start()
 
     def save(self):
         """Save actions to file"""
@@ -283,10 +310,11 @@ class ActionWidget(QtWidgets.QWidget):
         if file_name:
             save_options = {
                 'actions': self.action_recorder.action_log, 'filename': ''.join(file_name)}
-            temp_thread = ActionThread(
+            _thread = ActionThread(
                 self, self.action_recorder.save, **save_options)
-            temp_thread.start()
-            print("Thread returned")
+            _thread.start()
+            saved_items = self.find_saved_actions(os.getcwd())
+            self.show_saved_items(saved_items)
 
     def load(self):
         """Load actions from file"""
@@ -295,47 +323,31 @@ class ActionWidget(QtWidgets.QWidget):
             self, "Open Replay", "./", "*.replay")
         if file_name:
             load_options = {'filename': file_name[0]}
-            temp_thread = ActionThread(
+            _thread = ActionThread(
                 self, self.action_recorder.load, **load_options)
-            temp_thread.start()
+            _thread.start()
 
     def quick_save(self):
         """Quick save actions to default action.replay file"""
         logger.info("GUI initiated action quick save")
-        temp_thread = ActionThread(
+        _thread = ActionThread(
             self, self.action_recorder.save, self.action_recorder.action_log)
-        temp_thread.start()
+        _thread.start()
 
     def quick_load(self):
         """Quick load actions from default actio.replay file"""
         logger.info('GUI initiated action quick load')
-        temp_thread = ActionThread(self, self.action_recorder.load)
-        temp_thread.start()
+        _thread = ActionThread(self, self.action_recorder.load)
+        _thread.start()
 
     def replay(self):
         """Start the ActionReplay instance"""
         logger.info('GUI initiated replay start')
         self.action_recorder.stop()
-        temp_thread = ActionThread(
+        _thread = ActionThread(
             self, self.action_replayer.start, self.action_recorder.action_log)
-        temp_thread.start()
+        _thread.start()
         self.activateWindow()
-
-
-def record_replay():
-    Recorder = ActionRecorder()
-    try:
-        Recorder.start()
-        while Recorder.recording:
-            time.sleep(1)
-        Replayer = ActionReplay()
-        Replayer.start(Recorder.action_log)
-        Recorder.save(actions=Recorder.action_log)
-        Recorder.action_log = []
-        Recorder.load()
-        Replayer.start(Recorder.action_log)
-    except KeyboardInterrupt:
-        logger.warning("Keyboard interrupt - application exiting")
 
 
 def main():

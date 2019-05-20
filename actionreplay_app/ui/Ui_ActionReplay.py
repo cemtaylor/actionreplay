@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'action_replay.ui',
 # licensing of 'action_replay.ui' applies.
 #
-# Created: Fri May 17 11:06:36 2019
+# Created: Sun May 19 20:35:13 2019
 #      by: pyside2-uic  running on PySide2 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,19 +13,19 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_ActionReplay(object):
     def setupUi(self, ActionReplay):
         ActionReplay.setObjectName("ActionReplay")
-        ActionReplay.resize(470, 363)
+        ActionReplay.resize(413, 356)
         ActionReplay.setMouseTracking(False)
         self.save_action = QtWidgets.QPushButton(ActionReplay)
-        self.save_action.setGeometry(QtCore.QRect(230, 80, 111, 36))
+        self.save_action.setGeometry(QtCore.QRect(230, 40, 91, 36))
         self.save_action.setObjectName("save_action")
         self.load_action = QtWidgets.QPushButton(ActionReplay)
-        self.load_action.setGeometry(QtCore.QRect(340, 80, 111, 36))
+        self.load_action.setGeometry(QtCore.QRect(320, 40, 91, 36))
         self.load_action.setObjectName("load_action")
         self.replay_action = QtWidgets.QPushButton(ActionReplay)
-        self.replay_action.setGeometry(QtCore.QRect(10, 320, 441, 36))
+        self.replay_action.setGeometry(QtCore.QRect(10, 320, 401, 36))
         self.replay_action.setObjectName("replay_action")
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(ActionReplay)
-        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, 0, 229, 242))
+        self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, 0, 229, 284))
         self.verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_2)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -62,12 +62,18 @@ class Ui_ActionReplay(object):
         self.record_keyup.setObjectName("record_keyup")
         self.verticalLayout.addWidget(self.record_keyup)
         self.verticalLayout_2.addLayout(self.verticalLayout)
-        self.quick_save_action = QtWidgets.QPushButton(ActionReplay)
-        self.quick_save_action.setGeometry(QtCore.QRect(230, 20, 92, 36))
-        self.quick_save_action.setObjectName("quick_save_action")
         self.quick_load_action = QtWidgets.QPushButton(ActionReplay)
-        self.quick_load_action.setGeometry(QtCore.QRect(360, 20, 92, 36))
+        self.quick_load_action.setGeometry(QtCore.QRect(320, 0, 92, 36))
         self.quick_load_action.setObjectName("quick_load_action")
+        self.quick_save_action = QtWidgets.QPushButton(ActionReplay)
+        self.quick_save_action.setGeometry(QtCore.QRect(230, 0, 91, 36))
+        self.quick_save_action.setObjectName("quick_save_action")
+        self.list_saved_actions = QtWidgets.QListWidget(ActionReplay)
+        self.list_saved_actions.setGeometry(QtCore.QRect(230, 80, 181, 201))
+        self.list_saved_actions.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.list_saved_actions.setTextElideMode(QtCore.Qt.ElideRight)
+        self.list_saved_actions.setWordWrap(True)
+        self.list_saved_actions.setObjectName("list_saved_actions")
 
         self.retranslateUi(ActionReplay)
         QtCore.QMetaObject.connectSlotsByName(ActionReplay)
@@ -84,6 +90,7 @@ class Ui_ActionReplay(object):
         self.record_scroll.setText(QtWidgets.QApplication.translate("ActionReplay", "Mouse Scroll", None, -1))
         self.record_keydown.setText(QtWidgets.QApplication.translate("ActionReplay", "Key Down", None, -1))
         self.record_keyup.setText(QtWidgets.QApplication.translate("ActionReplay", "Key Up", None, -1))
-        self.quick_save_action.setText(QtWidgets.QApplication.translate("ActionReplay", "Quick Save", None, -1))
         self.quick_load_action.setText(QtWidgets.QApplication.translate("ActionReplay", "Quick Load", None, -1))
+        self.quick_save_action.setText(QtWidgets.QApplication.translate("ActionReplay", "Quick Save", None, -1))
+        self.list_saved_actions.setSortingEnabled(True)
 
