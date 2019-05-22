@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'action_replay.ui',
 # licensing of 'action_replay.ui' applies.
 #
-# Created: Sun May 19 20:35:13 2019
+# Created: Mon May 20 15:16:19 2019
 #      by: pyside2-uic  running on PySide2 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,7 +13,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 class Ui_ActionReplay(object):
     def setupUi(self, ActionReplay):
         ActionReplay.setObjectName("ActionReplay")
-        ActionReplay.resize(413, 356)
+        ActionReplay.resize(555, 399)
         ActionReplay.setMouseTracking(False)
         self.save_action = QtWidgets.QPushButton(ActionReplay)
         self.save_action.setGeometry(QtCore.QRect(230, 40, 91, 36))
@@ -22,7 +22,7 @@ class Ui_ActionReplay(object):
         self.load_action.setGeometry(QtCore.QRect(320, 40, 91, 36))
         self.load_action.setObjectName("load_action")
         self.replay_action = QtWidgets.QPushButton(ActionReplay)
-        self.replay_action.setGeometry(QtCore.QRect(10, 320, 401, 36))
+        self.replay_action.setGeometry(QtCore.QRect(0, 360, 551, 36))
         self.replay_action.setObjectName("replay_action")
         self.verticalLayoutWidget_2 = QtWidgets.QWidget(ActionReplay)
         self.verticalLayoutWidget_2.setGeometry(QtCore.QRect(0, 0, 229, 284))
@@ -69,11 +69,14 @@ class Ui_ActionReplay(object):
         self.quick_save_action.setGeometry(QtCore.QRect(230, 0, 91, 36))
         self.quick_save_action.setObjectName("quick_save_action")
         self.list_saved_actions = QtWidgets.QListWidget(ActionReplay)
-        self.list_saved_actions.setGeometry(QtCore.QRect(230, 80, 181, 201))
+        self.list_saved_actions.setGeometry(QtCore.QRect(230, 80, 321, 201))
         self.list_saved_actions.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
         self.list_saved_actions.setTextElideMode(QtCore.Qt.ElideRight)
         self.list_saved_actions.setWordWrap(True)
         self.list_saved_actions.setObjectName("list_saved_actions")
+        self.draw_action = QtWidgets.QPushButton(ActionReplay)
+        self.draw_action.setGeometry(QtCore.QRect(0, 300, 101, 36))
+        self.draw_action.setObjectName("draw_action")
 
         self.retranslateUi(ActionReplay)
         QtCore.QMetaObject.connectSlotsByName(ActionReplay)
@@ -93,4 +96,5 @@ class Ui_ActionReplay(object):
         self.quick_load_action.setText(QtWidgets.QApplication.translate("ActionReplay", "Quick Load", None, -1))
         self.quick_save_action.setText(QtWidgets.QApplication.translate("ActionReplay", "Quick Save", None, -1))
         self.list_saved_actions.setSortingEnabled(True)
+        self.draw_action.setText(QtWidgets.QApplication.translate("ActionReplay", "Draw Action", None, -1))
 

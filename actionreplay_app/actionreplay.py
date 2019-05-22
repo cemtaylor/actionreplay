@@ -9,8 +9,10 @@ from pynput import mouse, keyboard
 # GUI imports
 import os
 from PySide2 import QtCore, QtWidgets, QtGui
-from PySide2.QtCore import Signal, Slot
 from ui import Ui_ActionReplay
+# Vision imports
+import cv2
+import numpy as np
 
 
 class ActionReplay(object):
@@ -21,9 +23,36 @@ class ActionReplay(object):
         self.keyboard_controller = keyboard.Controller()
         self.replay = True
 
+    def draw(self, actions: list):
+        """Draw the path the mouse would take with the current action set"""
+        img = np.zeros((1080, 1920, 3), np.uint8)
+        line_color = (255, 255, 255)
+        for i in range(len(actions)):
+            if i == 0:
+                continue
+            last_action = actions[i-1]
+            action = actions[i]
+            if action['button']:
+                if action['pressed']:
+                    line_color = (128, 70, 0)
+                    cv2.circle(img, pos,
+                               15, line_color, 2)
+                else:
+                    line_color = (30, 180, 0)
+                    cv2.circle(img, pos,
+                               13, line_color, 2)
+            if action['pos'] and last_action['pos']:
+                last_pos = (last_action['pos'][0], last_action['pos'][1])
+                pos = (action['pos'][0], action['pos'][1])
+                cv2.line(img, last_pos, pos, line_color, 2)
+                line_color = (255, 255, 255)
+        cv2.imwrite('action.png', img)
+        logger.info("Finished drawing")
+
     def start(self, actions: list):
         """Start replacing the list of actions passed as method argument"""
         logger.info('Replay started')
+        self.draw(actions)
         for action in actions:
             if not self.replay:
                 break
@@ -53,6 +82,7 @@ class ActionReplay(object):
                         self.mouse_controller.release(action['button'])
                         logger.debug(
                             "Mouse button %s Released", action['button'])
+        logger.info('Replay finished')
 
 
 class ActionRecorder(object):
@@ -245,7 +275,9 @@ class ActionWidget(QtWidgets.QWidget):
         self.ui.quick_save_action.clicked.connect(self.quick_save)
         self.ui.quick_load_action.clicked.connect(self.quick_load)
         self.ui.replay_action.clicked.connect(self.replay)
+        self.ui.draw_action.clicked.connect(self.draw_actions)
 
+        # Recording toggles
         self.ui.record_move.toggled.connect(
             lambda: self.toggle_recording_option('move'))
         self.ui.record_click.toggled.connect(
@@ -257,6 +289,7 @@ class ActionWidget(QtWidgets.QWidget):
         self.ui.record_keyup.toggled.connect(
             lambda: self.toggle_recording_option('keyup'))
 
+        # Populate list of recent saved actions
         saved_items = self.find_saved_actions(os.getcwd())
         self.show_saved_items(saved_items)
 
@@ -334,6 +367,13 @@ class ActionWidget(QtWidgets.QWidget):
             self, self.action_recorder.save, self.action_recorder.action_log)
         _thread.start()
 
+    def draw_actions(self):
+        """Draw mouse actions to file"""
+        logger.info("GUI initiated action quick save")
+        _thread = ActionThread(
+            self, self.action_replayer.draw, self.action_recorder.action_log)
+        _thread.start()
+
     def quick_load(self):
         """Quick load actions from default actio.replay file"""
         logger.info('GUI initiated action quick load')
@@ -374,7 +414,6 @@ if __name__ == '__main__':
     logfile_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
     logger.addHandler(logfile_handler)
-
     # Start application
     logger.info('#'*30)
     logger.info('Application started')

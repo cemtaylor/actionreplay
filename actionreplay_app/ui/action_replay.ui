@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
-    <height>356</height>
+    <width>555</width>
+    <height>399</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -45,9 +45,9 @@
   <widget class="QPushButton" name="replay_action">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>320</y>
-     <width>401</width>
+     <x>0</x>
+     <y>360</y>
+     <width>551</width>
      <height>36</height>
     </rect>
    </property>
@@ -175,7 +175,7 @@
     <rect>
      <x>230</x>
      <y>80</y>
-     <width>181</width>
+     <width>321</width>
      <height>201</height>
     </rect>
    </property>
@@ -190,6 +190,19 @@
    </property>
    <property name="sortingEnabled">
     <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="draw_action">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>300</y>
+     <width>101</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Draw Action</string>
    </property>
   </widget>
  </widget>
