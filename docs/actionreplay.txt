@@ -5,3 +5,7 @@ TODO:
     * Add the ability to only record clicks and automatically navigate the mouse (reduce detection)
     * Add click fuzzing (define an area (x,y) to click within, randomize this)
     * Add the ability to manually edit the time between actions
+
+
+Installation requirements:
+    * Requires opencv installed (dnf install python3-opencv or pip install opencv-python)
