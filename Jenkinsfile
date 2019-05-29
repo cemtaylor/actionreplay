@@ -18,7 +18,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'pyinstaller --onefile actionreplay_app/actionreplay.py'
+                sh 'cd actionreplay_app; pyinstaller --onefile actionreplay_app/actionreplay.py'
             }
             post {
                 success {
