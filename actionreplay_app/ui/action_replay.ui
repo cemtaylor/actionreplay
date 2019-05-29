@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>555</width>
-    <height>399</height>
+    <width>469</width>
+    <height>407</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -16,57 +16,29 @@
   <property name="windowTitle">
    <string>ActionReplay</string>
   </property>
-  <widget class="QPushButton" name="save_action">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>40</y>
-     <width>91</width>
-     <height>36</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Save Action</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="load_action">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>40</y>
-     <width>91</width>
-     <height>36</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Load Action</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="replay_action">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>360</y>
-     <width>551</width>
-     <height>36</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Replay Action</string>
-   </property>
-  </widget>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
   <widget class="QWidget" name="verticalLayoutWidget_2">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>229</width>
-     <height>284</height>
+     <width>163</width>
+     <height>170</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="spacing">
+     <number>1</number>
+    </property>
     <item>
      <widget class="QPushButton" name="start_recording">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
+      </property>
       <property name="text">
        <string>Record Action</string>
       </property>
@@ -83,60 +55,104 @@
     </item>
     <item>
      <widget class="QPushButton" name="stop_recording">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
+      </property>
       <property name="text">
        <string>Stop Recording</string>
       </property>
      </widget>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="spacing">
+       <number>1</number>
+      </property>
       <item>
-       <widget class="QCheckBox" name="record_move">
-        <property name="text">
-         <string>Mouse Movement</string>
+       <widget class="QPushButton" name="draw_action">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <property name="text">
+         <string>Draw Action</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="record_click">
-        <property name="text">
-         <string>Mouse Clicks</string>
+       <widget class="QPushButton" name="replay_action">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <property name="text">
+         <string>Replay Action</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="load_action">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
+        </property>
+        <property name="text">
+         <string>Load Action</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="record_scroll">
-        <property name="text">
-         <string>Mouse Scroll</string>
+       <widget class="QPushButton" name="save_action">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
         </property>
-        <property name="checked">
-         <bool>true</bool>
+        <property name="text">
+         <string>Save Action</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>1</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="quick_load_action">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
+        </property>
+        <property name="text">
+         <string>Quick Load</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="record_keydown">
+       <widget class="QPushButton" name="quick_save_action">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(136, 138, 133);
+border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
+        </property>
         <property name="text">
-         <string>Key Down</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="record_keyup">
-        <property name="text">
-         <string>Key Up</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
+         <string>Quick Save</string>
         </property>
        </widget>
       </item>
@@ -144,40 +160,18 @@
     </item>
    </layout>
   </widget>
-  <widget class="QPushButton" name="quick_load_action">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>0</y>
-     <width>92</width>
-     <height>36</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Quick Load</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="quick_save_action">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>0</y>
-     <width>91</width>
-     <height>36</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Quick Save</string>
-   </property>
-  </widget>
   <widget class="QListWidget" name="list_saved_actions">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>80</y>
-     <width>321</width>
-     <height>201</height>
+     <x>170</x>
+     <y>0</y>
+     <width>291</width>
+     <height>401</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 0px;
+border: 1px solid rgb(186, 189, 182);</string>
    </property>
    <property name="selectionMode">
     <enum>QAbstractItemView::SingleSelection</enum>
@@ -192,18 +186,70 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPushButton" name="draw_action">
+  <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>300</y>
-     <width>101</width>
-     <height>36</height>
+     <y>180</y>
+     <width>161</width>
+     <height>221</height>
     </rect>
    </property>
-   <property name="text">
-    <string>Draw Action</string>
-   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QCheckBox" name="record_move">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="text">
+       <string>Mouse Movement</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="record_click">
+      <property name="text">
+       <string>Mouse Clicks</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="record_scroll">
+      <property name="text">
+       <string>Mouse Scroll</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="record_keydown">
+      <property name="text">
+       <string>Key Down</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QCheckBox" name="record_keyup">
+      <property name="text">
+       <string>Key Up</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

@@ -340,7 +340,7 @@ class ActionWidget(QtWidgets.QWidget):
         logging.info("GUI initiated save")
         file_name = QtWidgets.QFileDialog.getSaveFileName(
             self, "Save Replay", "./", ".replay")
-        if file_name:
+        if len(file_name) > 3:
             save_options = {
                 'actions': self.action_recorder.action_log, 'filename': ''.join(file_name)}
             _thread = ActionThread(
@@ -354,7 +354,7 @@ class ActionWidget(QtWidgets.QWidget):
         logging.info("GUI initiated load")
         file_name = QtWidgets.QFileDialog.getOpenFileName(
             self, "Open Replay", "./", "*.replay")
-        if file_name:
+        if len(file_name) > 3:
             load_options = {'filename': file_name[0]}
             _thread = ActionThread(
                 self, self.action_recorder.load, **load_options)
