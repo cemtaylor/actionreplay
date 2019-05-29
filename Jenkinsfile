@@ -18,7 +18,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux "apt-get update -y && apt-get install -y wget && pip install -r requirements.txt && cd actionreplay_app; pyinstaller --clean -y --dist ../dist/linux --one-dir actionreplay.py'
+                sh 'docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux "apt-get update -y && apt-get install -y wget && pip install -r requirements.txt && cd actionreplay_app; pyinstaller --clean -y --dist ../dist/linux --one-dir actionreplay.py"'
             }
             post {
                 success {
