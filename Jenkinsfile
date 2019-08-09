@@ -14,15 +14,15 @@ pipeline {
         stage('Deliver') {
             agent {
                 docker {
-                    image 'docker'
+                    image 'cdrx/pyinstaller-linux:python3'
                 }
             }
             steps {
-                sh 'docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux "apt-get update -y && apt-get install -y wget && pip install -r requirements.txt && cd actionreplay_app; pyinstaller --clean -y --dist ../dist/linux --onefile actionreplay.py"'
+                sh 'pyinstaller --onefile actionreplay.spec'
             }
             post {
                 success {
-                    archiveArtifacts 'dist-linux/actionreplay'
+                    archiveArtifacts 'dist/actionreplay'
                 }
             }
         }
