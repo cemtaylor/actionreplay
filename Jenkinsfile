@@ -18,7 +18,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'pyinstaller --onefile actionreplay.spec'
+                sh 'pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py'
             }
             post {
                 success {
