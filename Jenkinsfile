@@ -14,7 +14,7 @@ pipeline {
         stage('Deliver') {
             agent {
                 docker {
-                    image 'cemt/pyinstaller:latest'
+                    image 'cemt1990/pyinstaller:latest'
                 }
             }
             steps {

@@ -43,5 +43,5 @@ CMD ["sh"]
 
 # docker build --build-arg PYVER=3.7.4 -t test . && docker run --rm -it -v "$(pwd)/actionreplay_app:/src/" test
 
-# docker build --build-arg PYVER=3.7.4 -t cemt/pyinstaller:latest -t cemt/pyinstaller:0.1 .
+# docker build --build-arg PYVER=3.7.4 -t cemt1990/pyinstaller:latest -t cemt/pyinstaller:0.3 .
 # docker run --rm -v "$(pwd)/actionreplay_app:/src/" cemt/pyinstaller:latest sh "pip install -r requirements.txt && pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py"
