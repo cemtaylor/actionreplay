@@ -14,11 +14,11 @@ pipeline {
         stage('Deliver') {
             agent {
                 docker {
-                    image 'cdrx/pyinstaller-linux:python3'
+                    image 'cemt/pyinstaller:latest'
                 }
             }
             steps {
-                sh 'pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py'
+                sh 'pip install -r requirements.txt && pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py'
             }
             post {
                 success {
