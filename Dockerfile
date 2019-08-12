@@ -35,7 +35,7 @@ RUN pip install pyinstaller
 VOLUME /src/
 WORKDIR /src
 
-CMD ["sh", "-c", "pip install -r requirements.txt ; pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py"]
+CMD ["sh", "-c"]
 
 # rm -rf dist; docker run --rm -v "$(pwd):/src/" cdrx/pyinstaller-linux "apt-get update -y && apt-get install -y wget python3.7 python3-pip python3-pyside python3-opencv && pip install -r requirements.txt && pyinstaller --clean -y --dist ./dist/linux --workpath /tmp *.spec"
 
@@ -43,5 +43,5 @@ CMD ["sh", "-c", "pip install -r requirements.txt ; pyinstaller --clean -y --dis
 
 # docker build --build-arg PYVER=3.7.4 -t test . && docker run --rm -it -v "$(pwd)/actionreplay_app:/src/" test
 
-# docker build --build-arg PYVER=3.7.4 -t cemt1990/pyinstaller:latest -t cemt/pyinstaller:0.3 .
-# docker run --rm -v "$(pwd)/actionreplay_app:/src/" cemt/pyinstaller:latest sh "pip install -r requirements.txt && pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py"
+# docker build --build-arg PYVER=3.7.4 -t cemt1990/pyinstaller:latest -t cemt1990/pyinstaller:0.3 .
+# docker run --rm -v "$(pwd)/actionreplay_app:/src/" cemt1990/pyinstaller:latest sh "pip install -r requirements.txt && pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py"

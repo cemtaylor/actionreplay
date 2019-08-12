@@ -18,7 +18,7 @@ pipeline {
                 }
             }
             steps {
-                sh ''
+                sh 'pip install -r requirements.txt && pyinstaller --clean -y --dist ./dist --workpath /tmp --onefile actionreplay.py'
             }
             post {
                 success {
